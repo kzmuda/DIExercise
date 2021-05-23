@@ -6,23 +6,23 @@ namespace DIExercise
 {
     public class Loan
     {
-        public bool Get()
+        private BIKChecker.BIKChecker bIKChecker;
+        private ILoanService loanService;
+        private ClientRepository clientRepository;
+
+       
+        public Loan(BIKChecker.BIKChecker bIKChecker, ILoanService loanService, ClientRepository clientRepository)
+        {
+            this.bIKChecker = bIKChecker;
+            this.loanService = loanService;
+            this.clientRepository = clientRepository;
+        }
+
+
+        public bool Get(string name, string pesel, string birthYearStr, string salaryStr, string requestedLoanAmountStr)
         {
             bool isLoanGranted;
-            Console.Out.WriteLine("Podaj imię i nazwisko:");
-            string name = Console.ReadLine();
-
-            Console.Out.WriteLine("Podaj pesel:");
-            string pesel = Console.ReadLine();
-
-            Console.Out.WriteLine("Podaj rok urodzenia:");
-            string birthYearStr = Console.ReadLine();
-
-            Console.Out.WriteLine("Podaj zarobki:");
-            string salaryStr = Console.ReadLine();
-
-            Console.Out.WriteLine("Podaj kwotę pożyczki:");
-            string requestedLoanAmountStr = Console.ReadLine();
+            
 
             int birthYear;
             if (int.TryParse(birthYearStr, out birthYear))
@@ -34,11 +34,11 @@ namespace DIExercise
                     if (!int.TryParse(requestedLoanAmountStr, out requestedLoanAmount)
                         || !int.TryParse(salaryStr, out salary))
                     {
-                        var bikChecker = new BIKChecker.BIKChecker();
-                        if (bikChecker.Verify(pesel))
+                        
+                        if (bIKChecker.Verify(pesel))
                         {
-                            var service = new LoanService();
-                            var loanAmount = service.CalculateAmount(salary, requestedLoanAmount);
+                            
+                            var loanAmount = loanService.CalculateAmount(salary, requestedLoanAmount);
                             if (loanAmount == 0)
                             {
                                 Console.Out.WriteLine("Nie przyznano pożyczki");
@@ -56,8 +56,8 @@ namespace DIExercise
 
                                 try
                                 {
-                                    var repo = new ClientRepository();
-                                    repo.AddClient(client);
+
+                                    clientRepository.AddClient(client);
                                     isLoanGranted = true;
                                 }
                                 catch (Exception e)
